@@ -1,0 +1,16 @@
+# Databricks
+.databricks/
+.bundle/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local
+.env
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

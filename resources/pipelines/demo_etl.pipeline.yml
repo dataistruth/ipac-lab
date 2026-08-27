@@ -1,0 +1,28 @@
+# Demo DLT pipeline — static tables for lab experiments (no external data source).
+# Deploy: databricks bundle deploy -t dev --select pipelines.demo_etl
+# Start:  databricks bundle run -t dev demo_etl
+resources:
+  pipelines:
+    demo_etl:
+      name: ipac_lab_demo_etl
+      catalog: ${var.uc_catalog}
+      target: ${var.uc_schema}
+      development: true
+      continuous: false
+      photon: true
+      tags:
+        bundle: ipac-lab
+        purpose: demo_pipeline
+      libraries:
+        - notebook:
+            path: ../../src/pipelines/demo_etl.py
+      configuration:
+        environment: lab
+        uc_catalog: ${var.uc_catalog}
+        uc_schema: ${var.uc_schema}
+      clusters:
+        - label: default
+          driver_node_type_id: ${var.pipeline_driver_node_type}
+          node_type_id: ${var.pipeline_worker_node_type}
+          num_workers: ${var.pipeline_num_workers}
+          spark_conf: ${var.spark_conf}

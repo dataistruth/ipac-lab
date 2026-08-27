@@ -1,0 +1,32 @@
+{
+  "description": "Job cluster tiers for ipac-lab. Override via databricks.yml target variables (cluster_tier, job_cluster_node_type, job_cluster_num_workers, spark_master).",
+  "tiers": {
+    "j1": {
+      "label": "lab_small",
+      "description": "Single-node D16s_v3 — light notebooks and smoke tests",
+      "node_type_id": "Standard_D16s_v3",
+      "local_cores": 16,
+      "num_workers": 0
+    },
+    "j2": {
+      "label": "lab_medium",
+      "description": "Single-node D32s_v3 — allocation benchmarks (default)",
+      "node_type_id": "Standard_D32s_v3",
+      "local_cores": 32,
+      "num_workers": 0
+    },
+    "j3": {
+      "label": "lab_large",
+      "description": "Single-node D64s_v3 — heavy experiments",
+      "node_type_id": "Standard_D64s_v3",
+      "local_cores": 64,
+      "num_workers": 0
+    }
+  },
+  "pipeline_default": {
+    "description": "DLT demo pipeline cluster (multi-worker, non-single-node)",
+    "driver_node_type_id": "Standard_D8s_v3",
+    "worker_node_type_id": "Standard_D16s_v3",
+    "num_workers": 1
+  }
+}

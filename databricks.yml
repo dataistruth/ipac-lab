@@ -1,0 +1,76 @@
+# =============================================================================
+# ipac-lab — sandbox Databricks Asset Bundle for demos and experiments
+#
+# Cluster tiers: config/cluster_tiers.json (j1 / j2 / j3)
+#
+# Deploy all:
+#   databricks bundle deploy -t dev
+#
+# Deploy one job:
+#   databricks bundle deploy -t dev --select jobs.hello_experiment
+#   databricks bundle deploy -t dev --select jobs.allocation_benchmark
+#
+# Validate:
+#   databricks bundle validate -t dev
+# =============================================================================
+bundle:
+  name: ipac-lab
+
+include:
+  - config/*.yml
+  - resources/jobs/*.yml
+  - resources/pipelines/*.yml
+
+sync:
+  include:
+    - notebooks/**
+    - src/**
+  exclude:
+    - src/**/__pycache__
+    - src/**/*.pyc
+
+variables:
+  uc_catalog:
+    description: Unity Catalog for demo pipeline target
+    default: QA7
+  uc_schema:
+    description: Unity Catalog schema for demo pipeline
+    default: ipac_lab
+  cluster_tier:
+    description: Job cluster tier key (j1, j2, j3) — see config/cluster_tiers.json
+    default: j2
+  monolith_source_path:
+    description: Workspace path to monolith Source/ (AllocationV2 imports)
+    default: /Workspace/Users/usa-mukessingh@deloitte.com/iPACSCore_SDT_Databricks_msingh/Source
+  volume_path:
+    description: UC volume for allocation checkpoints (updated module)
+    default: /Volumes/qa7/datavolume/databrickdata/checkpoint
+  parallel_workers:
+    description: Parallel workers for updated allocation module
+    default: "3"
+  benchmark_number_of_run:
+    description: A/B benchmark passes per job run
+    default: "1"
+  grant_group:
+    description: Workspace group with CAN_MANAGE on lab jobs
+    default: ipacs_dev_team
+
+targets:
+  dev:
+    default: true
+    mode: development
+    variables:
+      uc_catalog: QA7
+      uc_schema: ipac_lab
+      cluster_tier: j2
+      parallel_workers: "3"
+      benchmark_number_of_run: "1"
+
+  qa:
+    mode: production
+    workspace:
+      root_path: /Workspace/Shared/ipac_lab/qa
+    variables:
+      uc_catalog: QA7
+      uc_schema: ipac_lab_qa
+      cluster_tier: j2

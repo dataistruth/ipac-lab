@@ -1,0 +1,47 @@
+# Runtime and cluster defaults. Tier j2 (D32 single-node) is the lab default.
+
+variables:
+  spark_version:
+    description: Databricks runtime for lab jobs and pipelines
+    default: "15.4.x-scala2.12"
+
+  job_cluster_node_type:
+    description: Node type for job clusters (set per tier in target overrides)
+    default: Standard_D32s_v3
+
+  job_cluster_num_workers:
+    description: "0 = single-node profile with spark.databricks.cluster.profile"
+    default: 0
+
+  spark_master:
+    description: local[N] cores for single-node job clusters — match tier local_cores
+    default: local[32]
+
+  job_cluster_spark_conf:
+    description: Spark conf for single-node lab job clusters
+    type: complex
+    default:
+      spark.databricks.cluster.profile: singleNode
+      spark.master: local[32]
+      spark.sql.adaptive.enabled: "true"
+      spark.sql.adaptive.coalescePartitions.enabled: "true"
+      spark.databricks.delta.optimizeWrite.enabled: "true"
+
+  spark_conf:
+    description: Shared Spark conf for multi-worker pipeline clusters
+    type: complex
+    default:
+      spark.sql.shuffle.partitions: "auto"
+      spark.databricks.delta.optimizeWrite.enabled: "true"
+
+  pipeline_driver_node_type:
+    description: DLT pipeline driver node
+    default: Standard_D8s_v3
+
+  pipeline_worker_node_type:
+    description: DLT pipeline worker node
+    default: Standard_D16s_v3
+
+  pipeline_num_workers:
+    description: DLT pipeline worker count
+    default: 1

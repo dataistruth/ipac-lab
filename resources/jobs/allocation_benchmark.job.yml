@@ -1,0 +1,51 @@
+# Allocation A/B benchmark — original vs load_allocation_input_updated
+# Deploy: databricks bundle deploy -t dev --select jobs.allocation_benchmark
+# Requires monolith Source/ at monolith_source_path with AllocationV2 modules deployed.
+resources:
+  jobs:
+    allocation_benchmark:
+      name: ipac_lab_allocation_benchmark
+      description: Benchmark load_allocation_input vs _updated (tier from cluster_tier var)
+      max_concurrent_runs: 1
+      timeout_seconds: 14400
+      tags:
+        bundle: ipac-lab
+        purpose: allocation_benchmark
+        cluster_tier: ${var.cluster_tier}
+      permissions:
+        - level: CAN_MANAGE
+          group_name: ${var.grant_group}
+      email_notifications:
+        on_failure:
+          - mukessingh@deloitte.com
+      job_clusters:
+        - job_cluster_key: lab_cluster
+          new_cluster:
+            node_type_id: ${var.job_cluster_node_type}
+            spark_version: ${var.spark_version}
+            num_workers: ${var.job_cluster_num_workers}
+            spark_conf: ${var.job_cluster_spark_conf}
+            data_security_mode: SINGLE_USER
+            runtime_engine: PHOTON
+            custom_tags:
+              bundle: ipac-lab
+              cluster_tier: ${var.cluster_tier}
+              purpose: allocation_benchmark
+              ResourceClass: SingleNode
+      tasks:
+        - task_key: benchmark
+          job_cluster_key: lab_cluster
+          notebook_task:
+            notebook_path: ../../notebooks/benchmark_load_allocation_input.py
+            base_parameters:
+              sp_name: usp_load_allocation_input
+              number_of_run: ${var.benchmark_number_of_run}
+              source_path: ${var.monolith_source_path}
+              volume_path: ${var.volume_path}
+              parallel_workers: ${var.parallel_workers}
+              EntityID: "115"
+              ClientID: "15348"
+              TaxPeriodID: "1"
+              RunID: "16560"
+              CatalogName: ${var.uc_catalog}
+              SchemaName: "IPC_2025_QA7_15348"

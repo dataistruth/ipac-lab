@@ -1,0 +1,41 @@
+# Smoke-test job — verifies bundle deploy, cluster tier j1, and notebook sync.
+# Deploy: databricks bundle deploy -t dev --select jobs.hello_experiment
+resources:
+  jobs:
+    hello_experiment:
+      name: ipac_lab_hello_experiment
+      description: ipac-lab smoke test (tier j1 single-node)
+      max_concurrent_runs: 2
+      tags:
+        bundle: ipac-lab
+        purpose: smoke_test
+        cluster_tier: j1
+      permissions:
+        - level: CAN_MANAGE
+          group_name: ${var.grant_group}
+      job_clusters:
+        - job_cluster_key: lab_j1
+          new_cluster:
+            node_type_id: Standard_D16s_v3
+            spark_version: ${var.spark_version}
+            num_workers: 0
+            spark_conf:
+              spark.databricks.cluster.profile: singleNode
+              spark.master: local[16]
+              spark.sql.adaptive.enabled: "true"
+            data_security_mode: SINGLE_USER
+            runtime_engine: PHOTON
+            custom_tags:
+              bundle: ipac-lab
+              cluster_tier: j1
+              purpose: hello_experiment
+              ResourceClass: SingleNode
+      tasks:
+        - task_key: hello
+          job_cluster_key: lab_j1
+          notebook_task:
+            notebook_path: ../../notebooks/hello_lab.py
+            base_parameters:
+              uc_catalog: ${var.uc_catalog}
+              uc_schema: ${var.uc_schema}
+              cluster_tier: j1
