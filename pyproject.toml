@@ -1,0 +1,23 @@
+[project]
+name = "ipac-lab"
+version = "0.1.0"
+description = "JSON-config-driven Lakeflow Connect scaffolding (run from repo root, not installed as a package)"
+requires-python = ">=3.12"
+
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
